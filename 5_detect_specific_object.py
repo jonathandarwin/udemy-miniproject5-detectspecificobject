@@ -7,6 +7,7 @@ def sift_detector(newImage, templateImage):
 
     sift = cv2.xfeatures2d.SIFT_create()
 
+    # cari kp dan desc dari kedua gambar (crop image dan image yang ingin dicari)
     kp1, desc1 = sift.detectAndCompute(image1, None)
     kp2, desc2 = sift.detectAndCompute(image2, None)
 
@@ -20,6 +21,8 @@ def sift_detector(newImage, templateImage):
 
     goodMatches = []
     for m,n in matches:
+        # matches yang bagus merupakan match yang distance nya seperti rumus dibawah
+        # tujuan ny untuk mengeliminasi / mengurangi match2 yang tidak tepat
         if (m.distance < 0.7 * n.distance):
             goodMatches.append(m)
     
@@ -33,6 +36,9 @@ while True:
     ret, frame = cap.read()
     height, width = frame.shape[:2]
 
+    # buat kotak 
+    # kotak ini buat deteksi gambar yang dicari
+    # kalo gambar yang dicari ada dikotak ini, munculkan pesan object found
     topLeftX = width/3
     topLeftY = (height/2) + (height/4)
     bottomRightX = (width/3) * 2
@@ -40,8 +46,10 @@ while True:
 
     cv2.rectangle(frame, (topLeftX, topLeftY), (bottomRightX, bottomRightY), 255, 3)
 
+    # crop gambar kotak yang sudah dibuat diatas
     cropped = frame[bottomRightY:topLeftY, topLeftX:bottomRightX]
 
+    # flip gambar nya biar videony kayak mirror
     frame = cv2.flip(frame, 1)
 
     matches = sift_detector(cropped, templateImage)
